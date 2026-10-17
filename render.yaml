@@ -1,0 +1,13 @@
+# Render "Blueprint": push the repo to GitHub, then Render > New > Blueprint and pick the repo.
+services:
+  - type: web
+    name: estateflow-crm
+    runtime: docker
+    plan: free
+    healthCheckPath: /api/health
+    envVars:
+      - key: SECRET_KEY
+        generateValue: true     # Render creates a random secret for you
+      - key: SEED_DEMO
+        value: "1"              # on every start, if the database is empty, re-create the demo users + data
+      # Optional: to keep data between restarts, add a DATABASE_URL env var in the Render dashboard

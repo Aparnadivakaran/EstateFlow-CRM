@@ -1,0 +1,22 @@
+# Keep the Docker build context small and free of local-only files
+.git
+.gitignore
+.venv
+venv
+**/node_modules
+frontend/dist
+**/__pycache__
+**/*.pyc
+.pytest_cache
+*.db
+*.db-wal
+*.db-shm
+.env
+.env.*
+.vscode
+.idea
+.claude
+backend/tests
+scripts
+*.zip
+*.md

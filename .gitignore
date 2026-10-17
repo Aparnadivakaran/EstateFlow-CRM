@@ -1,0 +1,65 @@
+# ---------- Python ----------
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# ---------- Local databases (created automatically on first run) ----------
+*.db
+*.db-wal
+*.db-shm
+*.db-journal
+*.sqlite
+*.sqlite3
+
+# ---------- Node / frontend ----------
+node_modules/
+frontend/dist/
+.vite/
+*.tsbuildinfo
+coverage/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# ---------- Secrets & local config (never commit) ----------
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# ---------- Browser-test / scratch output ----------
+test-results/
+playwright-report/
+screenshots/
+scratch/
+*.tmp
+*.bak
+*.orig
+*.log
+
+# ---------- Archives ----------
+*.zip
+*.tar
+*.tar.gz
+
+# ---------- Editors, OS & AI-tool folders ----------
+.vscode/
+.idea/
+*.swp
+.DS_Store
+Thumbs.db
+desktop.ini
+.claude/
+
+# ---------- Assignment brief (not part of the product) ----------
+/requirement.txt
