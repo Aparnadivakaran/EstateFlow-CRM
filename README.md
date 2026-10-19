@@ -2,7 +2,7 @@
 
 A small CRM for a real-estate sales team: manage **leads**, browse **properties** (projects → buildings → units) and **book** units without ever double-selling one.
 
-**Live app:** _add your deployed URL here_  ·  
+**Live app:** _(https://estateflow-crm-xyoc.onrender.com/)_  ·  
 
 ## Try it
 - **New company:** click *Create your company workspace* on the login page. You become the Admin of a brand-new, empty, private workspace and can add your sales team from the **Team** page.
