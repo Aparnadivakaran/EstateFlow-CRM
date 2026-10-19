@@ -4,6 +4,7 @@ import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProvider } from "./context.jsx";
 import App from "./App.jsx";
+import "@fontsource-variable/inter";   // self-hosted font: no external requests
 import "./styles.css";
 
 // One cache for all server data. Pages read from it with useQuery and refresh it with invalidateQueries.

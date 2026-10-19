@@ -14,7 +14,45 @@ const paths = {
   back: "M15 18l-6-6 6-6",
   plus: "M12 5v14M5 12h14",
   logout: "M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9",
+  chevronDown: "M6 9l6 6 6-6",
+  chevronRight: "M9 18l6-6-6-6",
+  trendUp: "M23 6l-9.5 9.5-5-5L1 18M17 6h6v6",
+  trendDown: "M23 18l-9.5-9.5-5 5L1 6M17 18h6v-6",
+  arrowUp: "M12 19V5M5 12l7-7 7 7",
+  arrowDown: "M12 5v14M19 12l-7 7-7-7",
+  rupee: "M6 3h12M6 8h12M6 13l8.5 8M6 13h3M9 13c6.667 0 6.667-10 0-10",
+  cube: "M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16zM3.3 7L12 12l8.7-5M12 22V12",
+  calendar: "M8 2v4M16 2v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2z",
+  phone: "M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z",
+  mail: "M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2zM22 6l-10 7L2 6",
+  pin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0zM12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6",
+  check: "M20 6L9 17l-5-5",
+  bell: "M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9M13.73 21a2 2 0 0 1-3.46 0",
+  target: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 18a6 6 0 1 0 0-12 6 6 0 0 0 0 12zM12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4z",
 };
+
+// Soft, deterministic avatar colours (same name -> same colour everywhere)
+const AVATAR_COLORS = [["#e0eaff", "#2f55d4"], ["#ffe9d5", "#c4501b"], ["#dcfae6", "#087443"], ["#fce7f6", "#c11574"],
+  ["#ece9fe", "#5925dc"], ["#cffafe", "#0e7090"], ["#fef0c7", "#b54708"], ["#ffe4e8", "#c01048"]];
+export const colorFor = (s = "") => AVATAR_COLORS[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % AVATAR_COLORS.length];
+const initialsOf = (name = "") => name.split(/\s+/).filter(Boolean).map((w) => w[0]).slice(0, 2).join("").toUpperCase();
+
+export function Avatar({ name = "", size = "" }) {
+  const [bg, fg] = colorFor(name);
+  return <span className={"avatar " + size} style={{ background: bg, color: fg }} aria-hidden="true">{initialsOf(name) || "?"}</span>;
+}
+
+export const Progress = ({ value, tone = "" }) => (
+  <div className={"progress " + tone}><i style={{ width: `${Math.max(0, Math.min(100, value))}%` }} /></div>
+);
+
+export const Tabs = ({ tabs, value, onChange }) => (
+  <div className="tabs" role="tablist">
+    {tabs.map(([v, label]) => (
+      <button key={v} role="tab" aria-selected={value === v} className={"tab " + (value === v ? "on" : "")} onClick={() => onChange(v)}>{label}</button>
+    ))}
+  </div>
+);
 
 export const Icon = ({ name }) => (
   <svg className="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">

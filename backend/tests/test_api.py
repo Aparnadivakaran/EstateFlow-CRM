@@ -2,6 +2,7 @@
 import os
 import tempfile
 import threading
+from datetime import date
 
 # Must be set before importing the app. Pass your own DATABASE_URL to run the suite against Postgres.
 os.environ.setdefault("DATABASE_URL", f"sqlite:///{tempfile.mkdtemp()}/test.db")
@@ -131,6 +132,8 @@ def test_concurrent_booking_only_one_wins(client, admin, rahul, priya):
 def test_dashboard(client, admin, rahul):
     d = client.get("/api/dashboard", headers=admin).json()
     assert d["scope"] == "team" and len(d["by_stage"]) == 7 and d["leaderboard"]
+    assert len(d["monthly"]) == 8 and d["monthly"][-1]["month"] == date.today().strftime("%Y-%m")
+    assert sum(m["bookings"] for m in d["monthly"]) >= 5          # demo bookings are spread over the last months
     d2 = client.get("/api/dashboard", headers=rahul).json()
     assert d2["scope"] == "mine" and d2["leaderboard"] == []
 

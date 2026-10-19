@@ -3,7 +3,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.js";
 import { useApp } from "../context.jsx";
 import { useForm } from "../hooks.js";
-import { Badge, Button, ErrorState, Field, Icon, Modal, PageHead, SkeletonRows } from "../components/ui.jsx";
+import { Avatar, Badge, Button, ErrorState, Field, Icon, Modal, PageHead, SkeletonRows } from "../components/ui.jsx";
 
 export default function Team() {
   const { user, toast } = useApp();
@@ -34,7 +34,7 @@ export default function Team() {
                 <tbody>
                   {data.map((u) => (
                     <tr key={u.id}>
-                      <td><div className="cell-main">{u.name}{u.id === user.id ? " (you)" : ""}</div><div className="cell-sub">{u.email}</div></td>
+                      <td><div className="who-cell"><Avatar name={u.name} /><div><div className="cell-main">{u.name}{u.id === user.id ? " (you)" : ""}</div><div className="cell-sub">{u.email}</div></div></div></td>
                       <td><Badge value={u.role} label={u.role === "admin" ? "Admin" : "Sales"} /></td>
                       <td><Badge value={u.is_active ? "active" : "cancelled"} label={u.is_active ? "Active" : "Deactivated"} /></td>
                       <td className="right">{u.id !== user.id && <Button size="sm" onClick={() => toggle(u)}>{u.is_active ? "Deactivate" : "Reactivate"}</Button>}</td>

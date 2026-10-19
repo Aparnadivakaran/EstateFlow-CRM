@@ -21,7 +21,8 @@ Tests (17, incl. tenant isolation and the concurrent-booking race): `cd backend;
 - **Leads** — create / edit / search (name, phone, email) / filter (stage, follow-up, employee) / paginate; 7 stages; notes timeline; follow-up dates; reassignment (admin).
 - **Properties** — projects, buildings, units with type, area, price and availability (available / booked / blocked).
 - **Booking flow** — pick a project → pick an available unit → token amount. Cancelling returns the unit to sale.
-- **Dashboard** — leads by stage, overdue/today follow-ups, bookings & value this month, inventory, conversion, team leaderboard (admin).
+- **Dashboard** — month-over-month KPI cards (booked value, new leads, bookings, overdue follow-ups), an interactive 8-month performance chart (booked value / bookings / new leads), a lead-conversion gauge, inventory sold, leads by stage, upcoming follow-ups, recent bookings and a team leaderboard (admin). Charts are hand-built SVG/CSS, no chart library.
+- **Design** — a premium SaaS look built on a small token-based design system (`frontend/src/styles.css`): self-hosted Inter font, white sidebar with workspace card and overdue badge, KPI cards, stage tabs, pipeline progress bars, colour-coded avatars and status pills, gradient project covers, smooth hover/transition states, responsive down to phone width with an off-canvas menu.
 - **Auth, signup & roles** — self-service company signup; Admin vs Sales Employee inside each company (see below). Responsive layout; loading, empty and error states everywhere.
 
 

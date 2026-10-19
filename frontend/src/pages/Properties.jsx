@@ -4,8 +4,13 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.js";
 import { useApp } from "../context.jsx";
 import { useForm } from "../hooks.js";
-import { Badge, Button, Empty, ErrorState, Field, Icon, Loading, Modal, PageHead } from "../components/ui.jsx";
+import { Badge, Button, Empty, ErrorState, Field, Icon, Loading, Modal, PageHead, Progress } from "../components/ui.jsx";
 import { moneyFull, money, UNIT_TYPES } from "../utils.js";
+
+// A distinct gradient per project (stable for the same name)
+const COVERS = ["linear-gradient(135deg,#1e40af,#3b82f6)", "linear-gradient(135deg,#047857,#34d399)", "linear-gradient(135deg,#6d28d9,#a78bfa)",
+  "linear-gradient(135deg,#be185d,#f472b6)", "linear-gradient(135deg,#c2410c,#fb923c)", "linear-gradient(135deg,#0e7490,#22d3ee)"];
+const coverFor = (s = "") => COVERS[[...s].reduce((a, c) => a + c.charCodeAt(0), 0) % COVERS.length];
 
 /* ---------- Projects list ---------- */
 export function Properties() {
@@ -31,22 +36,35 @@ export function Properties() {
           <div className="card"><Empty icon="🏗️" title="No projects yet" text={admin ? "Create a project, then add buildings and units." : "An admin needs to add projects first."} /></div>
         ) : (
           <div className="proj-grid">
-            {data.map((p) => (
-              <Link className="card proj-card" to={"/properties/" + p.id} key={p.id}>
-                <div><h2>{p.name}</h2><div className="muted small">📍 {p.location}</div></div>
-                <div className="meter" title="Green = available, blue = booked">
-                  <i className="a" style={{ width: `${p.total_units ? (p.available / p.total_units) * 100 : 0}%` }} />
-                  <i className="b" style={{ width: `${p.total_units ? (p.booked / p.total_units) * 100 : 0}%` }} />
-                </div>
-                <div className="row spread small">
-                  <span><b>{p.available}</b> available</span><span><b>{p.booked}</b> booked</span>
-                  <span className="muted">{p.total_units} units · {p.buildings} bldg</span>
-                </div>
-                <div className="cell-main">
-                  {p.min_price ? (p.min_price === p.max_price ? money(p.min_price) : `${money(p.min_price)} – ${money(p.max_price)}`) : "No units yet"}
-                </div>
-              </Link>
-            ))}
+            {data.map((p) => {
+              const sold = p.total_units ? Math.round((p.booked / p.total_units) * 100) : 0;
+              return (
+                <Link className="card proj-card" to={"/properties/" + p.id} key={p.id}>
+                  <div className="proj-cover" style={{ background: coverFor(p.name) }}>
+                    <Icon name="building" />
+                    <b>{p.name}</b>
+                  </div>
+                  <div className="proj-body">
+                    <div className="row spread">
+                      <span className="chip-info"><Icon name="pin" />{p.location}</span>
+                      <span className="small muted">{p.buildings} building{p.buildings === 1 ? "" : "s"}</span>
+                    </div>
+                    <div>
+                      <div className="row spread small" style={{ marginBottom: 6 }}><span className="muted">Sold</span><b>{sold}%</b></div>
+                      <Progress value={sold} tone="grad" />
+                    </div>
+                    <div className="proj-stats">
+                      <div><b>{p.total_units}</b><span>Units</span></div>
+                      <div><b style={{ color: "var(--green)" }}>{p.available}</b><span>Available</span></div>
+                      <div><b style={{ color: "var(--blue)" }}>{p.booked}</b><span>Booked</span></div>
+                    </div>
+                    <div className="cell-main num">
+                      {p.min_price ? (p.min_price === p.max_price ? money(p.min_price) : `${money(p.min_price)} – ${money(p.max_price)}`) : "No units yet"}
+                    </div>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         )}
       {creating && <ProjectForm onClose={() => setCreating(false)} onSaved={(p) => { setCreating(false); navigate("/properties/" + p.id); }} />}
@@ -105,6 +123,9 @@ export function ProjectDetail() {
     catch (e) { toast(e.message, "error"); }
   };
 
+  const allUnits = p.buildings.flatMap((b) => b.units);
+  const count = (s) => allUnits.filter((u) => u.status === s).length;
+
   return (
     <>
       <Link className="back" to="/properties"><Icon name="back" /> Properties</Link>
@@ -120,6 +141,15 @@ export function ProjectDetail() {
         )}
       </PageHead>
 
+      {allUnits.length > 0 && (
+        <div className="sum-chips">
+          <div className="sum-chip"><b>{allUnits.length}</b><span>Total units</span></div>
+          <div className="sum-chip"><b style={{ color: "var(--green)" }}>{count("available")}</b><span>Available</span></div>
+          <div className="sum-chip"><b style={{ color: "var(--blue)" }}>{count("booked")}</b><span>Booked</span></div>
+          {count("blocked") > 0 && <div className="sum-chip"><b>{count("blocked")}</b><span>Blocked</span></div>}
+          <div className="sum-chip"><b>{Math.round((count("booked") / allUnits.length) * 100)}%</b><span>Sold</span></div>
+        </div>
+      )}
       {p.buildings.length === 0 ? (
         <div className="card"><Empty icon="🏢" title="No buildings yet" text={admin ? "Add a building, then add units to it." : "Units will appear once an admin adds them."} /></div>
       ) : p.buildings.map((b) => {

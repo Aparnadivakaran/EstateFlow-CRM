@@ -4,7 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { api } from "../api.js";
 import { useApp } from "../context.jsx";
 import { useForm } from "../hooks.js";
-import { Badge, Button, ErrorState, Field, Icon, Loading, Modal } from "../components/ui.jsx";
+import { Avatar, Badge, Button, ErrorState, Field, Icon, Loading, Modal } from "../components/ui.jsx";
 import LeadForm from "../components/LeadForm.jsx";
 import BookUnitModal from "../components/BookUnitModal.jsx";
 import CancelBookingModal from "../components/CancelBookingModal.jsx";
@@ -49,16 +49,22 @@ export default function LeadDetail() {
   return (
     <>
       <Link className="back" to="/leads"><Icon name="back" /> Leads</Link>
-      <div className="page-head">
-        <div>
+      <section className="card lead-hero lift">
+        <Avatar name={lead.name} size="lg" />
+        <div className="info">
           <div className="row wrap"><h1>{lead.name}</h1><Badge value={lead.stage} /></div>
-          <p>{lead.phone}{lead.assigned_to ? " · Owner: " + lead.assigned_to.name : ""}</p>
+          <div className="row wrap" style={{ gap: 8, marginTop: 10 }}>
+            <a className="chip-info" href={"tel:" + lead.phone}><Icon name="phone" />{lead.phone}</a>
+            {lead.email && <a className="chip-info" href={"mailto:" + lead.email}><Icon name="mail" />{lead.email}</a>}
+            {lead.interested_project && <span className="chip-info"><Icon name="building" />{lead.interested_project.name}</span>}
+            {lead.assigned_to && <span className="chip-info"><Icon name="team" />Owner: {lead.assigned_to.name}</span>}
+          </div>
         </div>
         <div className="row wrap">
           <Button onClick={() => setModal("edit")}>Edit</Button>
-          {lead.stage !== "Lost" && <Button variant="primary" onClick={() => setModal("book")}>Book a unit</Button>}
+          {lead.stage !== "Lost" && <Button variant="primary" onClick={() => setModal("book")}><Icon name="cube" /> Book a unit</Button>}
         </div>
-      </div>
+      </section>
 
       <div className="detail-grid" style={{ opacity: isFetching ? 0.7 : 1 }}>
         <div className="stack">
@@ -107,7 +113,7 @@ export default function LeadDetail() {
             <h2 style={{ marginBottom: 10 }}>Stage</h2>
             <div className="stage-track">
               {STAGES.map((s) => (
-                <button key={s} className={lead.stage === s ? "on" : ""} disabled={busy || s === "Booked" || hasActiveBooking}
+                <button key={s} className={(lead.stage === s ? "on " : "") + (s === "Lost" ? "lost" : "")} disabled={busy || s === "Booked" || hasActiveBooking}
                   title={s === "Booked" ? "Use “Book a unit” to move a lead to Booked" : hasActiveBooking ? "Cancel the booking first" : ""}
                   onClick={() => lead.stage !== s && (s === "Lost" ? setModal({ lost: true }) : stageMutation.mutate({ stage: s }))}>
                   {s}

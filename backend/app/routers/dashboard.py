@@ -1,3 +1,4 @@
+import calendar
 from datetime import date, datetime, timedelta
 
 from fastapi import APIRouter, Depends
@@ -62,6 +63,26 @@ def dashboard(db: Session = Depends(get_db), user: models.User = Depends(current
             .group_by(models.User.id).order_by(func.count(B.id).desc())).all()
         leaderboard = [{"id": r[0], "name": r[1], "bookings": r[2], "value": r[3]} for r in rows]
 
+    # Last 8 calendar months (oldest first): booked value / count and new leads, for the charts
+    months, y, m = [], today.year, today.month
+    for _ in range(8):
+        months.append((y, m))
+        m -= 1
+        if m == 0:
+            y, m = y - 1, 12
+    series = {k: {"month": f"{k[0]}-{k[1]:02d}", "label": calendar.month_abbr[k[1]], "bookings": 0, "value": 0.0, "leads": 0}
+              for k in months}
+    for b in active:
+        s = series.get((b.created_at.year, b.created_at.month))
+        if s:
+            s["bookings"] += 1
+            s["value"] += b.agreed_price
+    for (created,) in db.execute(scope_leads(select(L.created_at))).all():
+        s = series.get((created.year, created.month))
+        if s:
+            s["leads"] += 1
+    monthly = [series[k] for k in reversed(months)]
+
     return {
         "scope": "team" if is_admin else "mine",
         "totals": {
@@ -74,6 +95,7 @@ def dashboard(db: Session = Depends(get_db), user: models.User = Depends(current
             "conversion_rate": round(counts.get("Booked", 0) / total_leads * 100, 1) if total_leads else 0,
         },
         "by_stage": by_stage,
+        "monthly": monthly,
         "follow_ups": [{"id": l.id, "name": l.name, "phone": l.phone, "stage": l.stage,
                         "next_follow_up": l.next_follow_up,
                         "assigned_to": l.assigned_to.name if l.assigned_to else None} for l in follow_ups],
